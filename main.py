@@ -1,27 +1,25 @@
+#Python Libs
 import numpy as np
-import cv2
-import pytesseract
 import time
-import gtts
-
-import tkinter as tk
-from tkinter import ttk
-
-import datetime
-
-from mss import mss
-from PIL import Image
-
-from playsound import playsound
-
 import threading
 import os
 import json
 import struct
+import datetime
 
-from pynput import mouse
+import tkinter as tk
+from tkinter import ttk
+
 from dataclasses import dataclass
 
+#External Libs
+import pytesseract
+import cv2
+import gtts
+
+from mss import mss
+from playsound import playsound
+from pynput import mouse
 
 @dataclass
 class Boundary:
@@ -82,6 +80,7 @@ class EU4Popup(threading.Thread):
                 print("Error: ", e)
 
     def callback(self):
+        #TODO: Save dates exit
         self.window.quit()
 
     def sumbit_date(self, event):
@@ -180,8 +179,9 @@ if __name__ == "__main__":
     tick_time = time.time()
     sct = mss()
     text = "no date found"
-    
-    
+
+    #TODO: Add ability to remove date/notifications
+
     while eu4.is_alive():
         #TODO: Allow users to set timer on screenshot
 
@@ -204,6 +204,8 @@ if __name__ == "__main__":
             #Try to grab the text from the photo
             #TODO: Do text sanitizing so we can easier compare
             text = pytesseract.image_to_string(thresh)
+
+            #TODO: Add preview of date in GUI instead of imshow
             cv2.imshow("Thresh",image)
             if (cv2.waitKey(1) & 0xFF) == ord('q'):
                 cv2.destroyAllWindows()
