@@ -1,5 +1,7 @@
 # EU4Popup
 
+Notifications for EU4. Ironman compatible!
+
 ## What is it
 
 EU4Popup allows you to set a date, and get a popup when that date has been reach.
@@ -7,13 +9,18 @@ It is useful for time based event and button you can only click every x years. S
 
 Currently it will TTS you the date and send you a popup. the only reason it currently TTS you is because the popup is very hard to notice
 
+## Installation
+
+Not tested enough, but there should be a zip file with exe in releases. Just extract that and run main.exe.
+It requires Tesseract to run, which I can distribute with it, or you can download it yourself, which I recommend.
+
 ## Usage
 
 To install and use. you need to install all the external python libraries, my goal is to create a executable, but that is currently on my TODO.
 
 ## How it works
 
-Simply put it grabs a screenshot of EU4's date and read that date as text, and compare to other dates.
+Simply put: It grabs a screenshot of EU4's date and read that date as text, and compare it to the dates you have set.
 
 ## Todo
 
@@ -24,6 +31,7 @@ Simply put it grabs a screenshot of EU4's date and read that date as text, and c
 * Add a error logger to the UI
 * Add Ability to remove notifications
 * ~~Add preview of cropping/image capture~~[Finished]
+* Add Tesseract path to config for people who have installed it themselves
 
 ## External Libs
 
@@ -51,4 +59,4 @@ A cross-platform way to play the sounds I get from gTTS. [GitHub](https://github
 
 ### pynput
 
-A cross-platform library to handle input devices, in my case, I handle som mouse clicks. [GitHub](https://github.com/moses-palmer/pynput), [PyPi](https://pypi.org/project/pynput/)
+A cross-platform library to handle input devices, in my case, I handle some mouse clicks. [GitHub](https://github.com/moses-palmer/pynput), [PyPi](https://pypi.org/project/pynput/)
