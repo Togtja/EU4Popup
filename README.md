@@ -25,31 +25,30 @@ Simply put it grabs a screenshot of EU4's date and read that date as text, and c
 * Add Ability to remove notifications
 * Add preview of cropping/image capture
 
-
 ## External Libs
 
 I use a bunch of external libs, I hope to cut down on some of them
 
-## OpenCv
+### OpenCv
 
 Used for image processing. [GitHub](https://github.com/skvark/opencv-python), [PyPi](https://pypi.org/project/opencv-python/)
 
-## Pytesseract
+### Pytesseract
 
 Used to read text of image. [GitHub](https://github.com/madmaze/pytesseract), [PyPi](https://pypi.org/project/pytesseract/)
 
-## gTTS
+### gTTS
 
 API of Google translate and TTS. [GitHub](https://github.com/pndurette/gTTS), [PyPi](https://pypi.org/project/gTTS/)
 
-## MSS
+### MSS
 
 Really fast library to grab screenshots. [GitHub](https://github.com/BoboTiG/python-mss), [PyPi](https://pypi.org/project/mss/)
 
-## playsound
+### playsound
 
 A cross-platform way to play the sounds I get from gTTS. [GitHub](https://github.com/TaylorSMarks/playsound), [PyPi](https://pypi.org/project/playsound/)
 
-## pynput
+### pynput
 
 A cross-platform library to handle input devices, in my case, I handle som mouse clicks. [GitHub](https://github.com/moses-palmer/pynput), [PyPi](https://pypi.org/project/pynput/)
