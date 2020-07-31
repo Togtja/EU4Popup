@@ -12,6 +12,8 @@ from tkinter import ttk
 
 from dataclasses import dataclass
 
+from PIL import Image, ImageTk
+
 #External Libs
 import pytesseract
 import cv2
@@ -27,6 +29,7 @@ class Boundary:
     top_y: int = 50
     bottom_x: int = 100
     bottom_y: int = 100
+
 class Config:
     filename: str = "config.json"
 
@@ -36,11 +39,13 @@ class Config:
             self.save()
         else:
             self.load()
+    
     def load(self):
         with open(self.filename, "r") as js:    
             data  = json.load(js)
         bound = data["boundary"]
         self.boundary = Boundary(bound["top_x"], bound["top_y"], bound["bottom_x"], bound["bottom_y"])
+    
     def save(self):
         data = {}
         data["boundary"] = {
@@ -127,6 +132,7 @@ class EU4Popup(threading.Thread):
     def run(self):
         #Create the tkinter GUI and run the mainloop
         self.window = tk.Tk()
+        self.window.title("EU4 Notification Manager")
         self.window.protocol("WM_DELETE_WINDOW", self.callback)
         self.display_text = tk.StringVar()
         self.eu4_date = tk.Label(self.window, textvariable=self.display_text)
@@ -139,12 +145,15 @@ class EU4Popup(threading.Thread):
         self.boundary_btn = tk.Button(self.window, text="Crop Date")
         self.boundary_btn.bind("<Button-1>", self.new_boundary)
 
+        self.image_lbl = tk.Label(self.window)
+
         #TODO: Add a error logger in the UI
         self.eu4_date.pack()
         self.boundary_btn.pack()
         self.entry_text.pack()
         self.date_entry.pack()
         self.submit_button.pack()
+        self.image_lbl.pack()
 
         self.window.mainloop()
     
@@ -169,10 +178,16 @@ class EU4Popup(threading.Thread):
                 b = ttk.Button(popup, text="Okay", command=popup.destroy)
                 b.grid(row=1, column=0)
 
+    def update_crop_area(self, image):
+        new_image=ImageTk.PhotoImage(Image.fromarray(image))
+        self.image_lbl.configure(image = new_image)
+        self.image_lbl.image=new_image
+
     def get_boundarybox(self):
         return {'top': self.p_y, 'left': self.p_x, 'width': abs(self.p_x-self.r_x), 'height': abs(self.p_y-self.r_y)}
 
 if __name__ == "__main__":
+    pytesseract.pytesseract.tesseract_cmd = os.path.abspath("tesseract/tesseract.exe")
     config = Config()
     eu4 = EU4Popup(config)
     bound = config.boundary
@@ -205,11 +220,8 @@ if __name__ == "__main__":
             #TODO: Do text sanitizing so we can easier compare
             text = pytesseract.image_to_string(thresh)
 
-            #TODO: Add preview of date in GUI instead of imshow
-            cv2.imshow("Thresh",image)
-            if (cv2.waitKey(1) & 0xFF) == ord('q'):
-                cv2.destroyAllWindows()
-                break
+            #Show the crop area in the UI
+            eu4.update_crop_area(image)
 
         #Fancy GUI to display year
         try:

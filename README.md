@@ -23,7 +23,7 @@ Simply put it grabs a screenshot of EU4's date and read that date as text, and c
 * Save user notifications
 * Add a error logger to the UI
 * Add Ability to remove notifications
-* Add preview of cropping/image capture
+* ~~Add preview of cropping/image capture~~[Finished]
 
 ## External Libs
 
