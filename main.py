@@ -85,8 +85,8 @@ class EU4Popup(threading.Thread):
         self.window.quit()
 
     def sumbit_date(self, event):
-    #Sanitize user entered string!
         try:
+            #TODO: Sanitize the "date_entry" string for whitespaces
             datenoti_object = datetime.datetime.strptime(self.date_entry.get(), "%d.%m.%Y")
             date_foramted = datenoti_object.strftime("%d %B %Y")
             print(date_foramted)
@@ -126,6 +126,7 @@ class EU4Popup(threading.Thread):
         self.config.save()
 
     def run(self):
+        #Create the tkinter GUI and run the mainloop
         self.window = tk.Tk()
         self.window.protocol("WM_DELETE_WINDOW", self.callback)
         self.display_text = tk.StringVar()
@@ -139,6 +140,7 @@ class EU4Popup(threading.Thread):
         self.boundary_btn = tk.Button(self.window, text="Crop Date")
         self.boundary_btn.bind("<Button-1>", self.new_boundary)
 
+        #TODO: Add a error logger in the UI
         self.eu4_date.pack()
         self.boundary_btn.pack()
         self.entry_text.pack()
@@ -178,23 +180,27 @@ if __name__ == "__main__":
     tick_time = time.time()
     sct = mss()
     text = "no date found"
-    #TODO: Make the user set the box
     
     
     while eu4.is_alive():
         #TODO: Allow users to set timer on screenshot
-        #Grab the screenshot
+
         curr_time = time.time()
         if(curr_time > tick_time):
+            #Grab the screenshot
             sct_img = sct.grab(eu4.get_boundarybox())
+
             #Translate it to an np array
             image = np.array(sct_img)
+
             #Use fancy openCV image processing to clean out the photo
             gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
             sharpen_kernel = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
             sharpen = cv2.filter2D(gray, -1, sharpen_kernel)
             thresh = cv2.threshold(sharpen, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+
             tick_time = time.time() + 0.2
+            
             #Try to grab the text from the photo
             #TODO: Do text sanitizing so we can easier compare
             text = pytesseract.image_to_string(thresh)
@@ -206,9 +212,12 @@ if __name__ == "__main__":
         #Fancy GUI to display year
         try:
             curr_date_obj = datetime.datetime.strptime(text, "%d %B %Y")
+            #Set the text in the UI to be current EU4 Year
             eu4.set_text(text)    
+            #Update the notification aka check if we should trigger a notification
             eu4.update_notifications(curr_date_obj)
-        except:           
+        except:
+            #Could not translate text to date object, so unknown date
             eu4.set_text("unknown date:" + text)
 
 
