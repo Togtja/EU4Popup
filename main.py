@@ -11,25 +11,27 @@ import datetime
 
 from mss import mss
 from PIL import Image
-from screeninfo import get_monitors
 
 from playsound import playsound
 
 import threading
 import os
+import json
+import struct
 
 from pynput import mouse
+from dataclasses import dataclass
 
 
 class EU4Popup(threading.Thread):
     text_lock = threading.Lock()
     noti_lock = threading.Lock()
     write_lock = threading.Lock()
-    def __init__(self):
-        self.p_x = 50
-        self.p_y = 50
-        self.r_x = 100
-        self.r_y = 100
+    def __init__(self, p_x, p_y, r_x, r_y):
+        self.p_x = p_x
+        self.p_y = p_y
+        self.r_x = r_x
+        self.r_y = r_y
         threading.Thread.__init__(self)
         self.current_notification = dict()
         self.start()
@@ -86,7 +88,10 @@ class EU4Popup(threading.Thread):
         time.sleep(0.1)
         with mouse.Listener(on_click=self.on_click) as listener:
             listener.join()
-    
+        config = Config()
+        config.boundary = Boundary(self.p_x, self.p_y, self.r_x, self.r_y)
+        config.save()
+
     def run(self):
         self.window = tk.Tk()
         self.window.protocol("WM_DELETE_WINDOW", self.callback)
@@ -132,8 +137,42 @@ class EU4Popup(threading.Thread):
 
     def get_boundarybox(self):
         return {'top': self.p_y, 'left': self.p_x, 'width': abs(self.p_x-self.r_x), 'height': abs(self.p_y-self.r_y)}
+
+@dataclass
+class Boundary:
+    top_x: int = 50
+    top_y: int = 50
+    bottom_x: int = 100
+    bottom_y: int = 100
+class Config:
+    filename: str = "config.json"
+
+    boundary = Boundary()
+    def __init__(self):
+        if(not os.path.exists(self.filename)):
+            self.save()
+        else:
+            self.load()
+    def load(self):
+        with open(self.filename, "r") as js:    
+            data  = json.load(js)
+        bound = data["boundary"]
+        self.boundary = Boundary(bound["top_x"], bound["top_y"], bound["bottom_x"], bound["bottom_y"])
+    def save(self):
+        data = {}
+        data["boundary"] = {
+            "top_x": self.boundary.top_x,
+            "top_y": self.boundary.top_y,
+            "bottom_x": self.boundary.bottom_x,
+            "bottom_y": self.boundary.bottom_y
+        }
+        with open(self.filename, "w") as js:
+            json.dump(data, js)
+            
 if __name__ == "__main__":
-    eu4 = EU4Popup()
+    config = Config()
+    bound = config.boundary
+    eu4 = EU4Popup(bound.top_x,bound.top_y, bound.bottom_x, bound.bottom_y)
     tick_time = time.time()
     sct = mss()
     text = "no date found"
